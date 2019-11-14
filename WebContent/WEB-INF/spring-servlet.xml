@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+   		http://www.springframework.org/schema/data/jpa
+   		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+   		http://www.springframework.org/schema/util 
+   		http://www.springframework.org/schema/util/spring-util.xsd	
+		">
+
+	<jpa:repositories base-package="com.acmsk.dortkafadar.repository" />
+	
+	<mvc:annotation-driven />
+	
+	<context:component-scan base-package="com.acmsk.dortkafadar.controller" />
+	
+	<mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources>
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" id="myDataSource">
+		<property value="com.mysql.cj.jdbc.Driver" name="driverClass" />
+		<property
+			value="jdbc:mysql://localhost:3306/dortkafadar?useSSL=false&amp;useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"
+			name="jdbcUrl" />
+		<property name="user" value="root" />
+		<property name="password" value="000972//" />
+		<property name="minPoolSize" value="3" />
+		<property name="maxPoolSize" value="20" />
+		<property name="maxIdleTime" value="30000" />
+		<property name="numHelperThreads" value="10" />
+	</bean>
+
+	<bean class="org.hibernate.jpa.HibernatePersistenceProvider" id="hibernatePersistenceProvider" />
+	<bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
+		<property name="dataSource" ref="myDataSource" />
+		<property name="persistenceProvider" ref="hibernatePersistenceProvider" />
+		<property name="packagesToScan" value="com.acmsk.dortkafadar.entities" />
+		<property name="jpaPropertyMap">
+			<util:map>
+				<entry key="hibernate.hbm2ddl.auto" value="update"></entry>
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
